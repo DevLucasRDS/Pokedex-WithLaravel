@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 
 class PokemonControler extends Controller
 {
-    public function index(Request $request)
+    public function pokemon(Request $request)
     {
         // Recebe o nome do Pokémon da query string (ex: ?name=pikachu)
         $name = $request->query('name', 'pikachu'); // Default: pikachu
