@@ -1,20 +1,9 @@
 @extends('layouts.admin') @section('content')
 <div class="card mt-4 mb-4 border shadow">
     <div class="card-body">
-        <form action="{{ route('register.store') }}" method="POST">
+        <form action="{{ route('auth') }}" method="POST">
             @csrf
             <div class="row">
-                <div class="mb-3">
-                    <label class="form-label" for="nome">Nome</label>
-                    <input
-                        type="text"
-                        name="nome"
-                        id="nome"
-                        class="form-control"
-                        value=""
-                        placeholder="Digite o nome da conta"
-                    />
-                </div>
                 <div class="mb-3">
                     <label class="form-label" for="email">Email</label>
                     <input
@@ -38,7 +27,7 @@
 
                 <div class="mb-3">
                     <button type="submit" class="btn btn-info btn-sm">
-                        Criar conta
+                        Login
                     </button>
                 </div>
                 @if (session('success'))
