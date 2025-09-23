@@ -6,13 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    public function index()
-    {
-        return view('base.home');
-    }
     public function create()
     {
         return view('create-account');
@@ -26,12 +23,13 @@ class UserController extends Controller
             'password' => 'required|string|min:6',
         ]);
 
-        User::create([
+        $User = User::create([
             'name' => $data['nome'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
 
+        Auth::login($User);
         return redirect()->route('pokedex.index')->with('success', 'Conta criada com sucesso!');
     }
 }

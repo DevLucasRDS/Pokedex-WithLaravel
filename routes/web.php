@@ -25,3 +25,5 @@ Route::get('/pokedex', [PokemonControler::class, 'pokedex'])->name('pokedex.inde
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [PokemonControler::class, 'pokedexDashboard'])->name('dashboard');
 });
+
+Route::get('/listar-pokemon', [PokemonControler::class, 'listar'])->name('listar');
