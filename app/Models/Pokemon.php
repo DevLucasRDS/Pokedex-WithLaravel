@@ -9,23 +9,24 @@ class Pokemon extends Model
 {
     use HasFactory;
 
-    // Nome da tabela (se não for o plural "pokemons")
     protected $table = 'pokemon';
 
-    // Campos que podem ser preenchidos via mass assignment
     protected $fillable = [
         'nome',
         'tipo',
         'altura',
         'peso',
-        'status',
-        'habilidades',
         'imagem',
+        'hp',
+        'attack',
+        'defense',
+        'special_attack',
+        'special_defense',
+        'speed',
+        'habilidades',
     ];
 
-    // Cast para JSON para poder acessar como array no PHP
     protected $casts = [
-        'status' => 'array',
         'habilidades' => 'array',
     ];
 }

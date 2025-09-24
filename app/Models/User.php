@@ -17,10 +17,21 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    protected static function booted()
+    {
+        static::creating(function ($user) {
+            do {
+                $id = random_int(100000, 999999); // exemplo: 6 dígitos
+            } while (User::where('id', $id)->exists());
+            $user->id = $id;
+        });
+    }
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'sobrenome',
     ];
 
     /**

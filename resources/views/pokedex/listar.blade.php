@@ -5,9 +5,24 @@
     <div class="card-body">
 
         <!-- Formulário de pesquisa -->
-        <form method="GET" action="{{ route('listar') }}" class="mb-3 d-flex">
-            <input type="text" name="name" class="form-control me-2" placeholder="Pesquisar Pokémon" value="{{ $search ?? '' }}">
+        <form method="GET" action="{{ route('listar') }}" class="mb-3 d-flex gap-2">
+            <input
+                type="text"
+                name="name"
+                class="form-control me-2"
+                placeholder="Pesquisar Pokémon"
+                value="{{ $search }}"
+            >
+            <select name="type" class="form-select me-2">
+                <option value="">-- Tipo --</option>
+                @foreach (['fire','water','grass','electric','ice','fighting','poison','ground','flying','psychic','bug','rock','ghost','dragon','dark','steel','fairy'] as $t)
+                <option value="{{ $t }}" {{ ($type ?? '') === $t ? 'selected' : '' }}>
+                {{ ucfirst($t) }}
+                </option>
+                    @endforeach
+        </select>
             <button type="submit" class="btn btn-primary">Buscar</button>
+            <a href="{{route('listar')}}" class="btn btn-warning btn-sm"> Limpar</a>
         </form>
 
         <table class="table table-striped table-hover text-center align-middle">
@@ -21,15 +36,14 @@
                             'hp' => 'HP',
                             'attack' => 'Attack',
                             'defense' => 'Defense',
-                            'special-attack' => 'Sp.Atk',
-                            'special-defense' => 'Sp.Def',
+                            'special_attack' => 'Sp.Atk',
+                            'special_defense' => 'Sp.Def',
                             'speed' => 'Speed'
                         ];
                     @endphp
 
                     @foreach ($columns as $key => $label)
                         <th>
-                            @if($key !== 'tipo') {{-- tipo não é numérico nem status --}}
                             <a href="{{ route('listar', [
                                 'sort' => $key,
                                 'order' => ($sort === $key && $order === 'asc') ? 'desc' : 'asc',
@@ -40,9 +54,6 @@
                                     {{ $order === 'asc' ? '▲' : '▼' }}
                                 @endif
                             </a>
-                            @else
-                                {{ $label }}
-                            @endif
                         </th>
                     @endforeach
                 </tr>
@@ -50,18 +61,18 @@
             <tbody>
                 @foreach($pokemons as $pokemon)
                 <tr>
-                    <td class="d-flex align-items-center justify-content-center">
-                        <img src="{{ $pokemon['imagem'] }}" class="me-2">
-                        <span>{{ $pokemon['id'] }}</span>
-                    </td>
-                    <td class="text-decoration-none">{{ $pokemon['nome'] }}</td>
-                    <td>{{ $pokemon['tipo'] }}</td>
-                    <td>{{ $pokemon['status']['hp'] }}</td>
-                    <td>{{ $pokemon['status']['attack'] }}</td>
-                    <td>{{ $pokemon['status']['defense'] }}</td>
-                    <td>{{ $pokemon['status']['special-attack'] }}</td>
-                    <td>{{ $pokemon['status']['special-defense'] }}</td>
-                    <td>{{ $pokemon['status']['speed'] }}</td>
+                    <th class="d-flex align-items-center justify-content-center">
+                        <img src="{{ $pokemon->imagem }}" class="me-2">
+                        <span>{{ $pokemon->id }}</span>
+                    </th>
+                    <td>{{ $pokemon->nome }}</td>
+                    <td>{{ $pokemon->tipo }}</td>
+                    <td>{{ $pokemon->hp }}</td>
+                    <td>{{ $pokemon->attack }}</td>
+                    <td>{{ $pokemon->defense }}</td>
+                    <td>{{ $pokemon->special_attack }}</td>
+                    <td>{{ $pokemon->special_defense }}</td>
+                    <td>{{ $pokemon->speed }}</td>
                 </tr>
                 @endforeach
             </tbody>

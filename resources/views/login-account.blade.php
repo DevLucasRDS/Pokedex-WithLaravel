@@ -5,13 +5,14 @@
             @csrf
             <div class="row">
                 <div class="mb-3">
-                    <label class="form-label" for="email">Email</label>
+                    <label class="form-label" for="login">Usuario</label>
                     <input
-                        type="email"
-                        name="email"
-                        id="email"
+                        type="text"
+                        name="login"
+                        id="login"
                         class="form-control"
                         value=""
+                        placeholder="Digite seu EMAIL ou seu NOME"
                     />
                 </div>
                 <div class="mb-3">

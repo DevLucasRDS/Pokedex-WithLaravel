@@ -27,4 +27,10 @@ class UserRequest extends FormRequest
             'password' => 'required|min:7|max:300',
         ];
     }
+    public function messages(): array
+    {
+        return [
+            'email.unique' => 'Ja existe uma conta com este email'
+        ];
+    }
 }

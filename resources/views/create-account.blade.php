@@ -16,6 +16,17 @@
                     />
                 </div>
                 <div class="mb-3">
+                    <label class="form-label" for="sobrenome">Sobrenome</label>
+                    <input
+                        type="text"
+                        name="sobrenome"
+                        id="sobrenome"
+                        class="form-control"
+                        value=""
+                        placeholder="Digite o sobrenome"
+                    />
+                </div>
+                <div class="mb-3">
                     <label class="form-label" for="email">Email</label>
                     <input
                         type="email"
@@ -44,6 +55,7 @@
                 @if (session('success'))
                 <span class="txt_success"> {{ session("success") }} </span>
                 @endif
+
             </div>
         </form>
     </div>

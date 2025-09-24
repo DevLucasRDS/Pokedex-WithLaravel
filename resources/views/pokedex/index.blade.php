@@ -12,7 +12,7 @@
                 placeholder="Digite o nome do Pokémon"
                 value="{{ request('name') }}"
             >
-            <div class="pd-2 d-flex">
+            <div class="pd-2 d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Buscar</button>
                 <a href="{{route('pokedex.index')}}" class="btn btn-warning btn-sm"> Limpar</a>
             </div>
@@ -27,15 +27,16 @@
                 @foreach ($pokemons as $pokemon)
                     <div class="col">
                         <div class="card shadow p-3">
-                            <img
-                                src="{{ $pokemon['imagem'] }}"
+                            <a href="{{route('especificacao', ['pokemon' => $pokemon->id])}}" class="text-decoration-none text-bg-light">
+                                <img
+                                src="{{ $pokemon->imagem }}"
                                 class="card-img-top w-50 mx-auto d-block"
                                 alt="{{ $pokemon['nome'] }}"
                             />
                             <div class="card-body">
-                                <h5 class="card-title text-center">{{ $pokemon['nome'] }}</h5>
+                                <h5 class="card-title text-center">{{ $pokemon->nome }}</h5>
                                 <p class="card-text">
-                                    <strong>Tipo:</strong> {{ $pokemon['tipo'] }}
+                                    <strong>Tipo:</strong> {{ $pokemon->tipo }}
                                 </p>
 
                                 {{-- Funções extras só aparecem para usuários logados --}}
@@ -43,6 +44,8 @@
                                     <a href="#" class="btn btn-success btn-sm">Favoritar</a>
                                     <a href="#" class="btn btn-info btn-sm">Detalhes</a>
                                 @endauth
+                            </a>
+
                             </div>
                         </div>
                     </div>
