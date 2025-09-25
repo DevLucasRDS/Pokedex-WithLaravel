@@ -24,8 +24,8 @@ return new class extends Migration
             $table->integer('special_defense')->nullable();
             $table->integer('speed')->nullable();
 
-            // Habilidades pode continuar como JSON
-            $table->json('habilidades')->nullable();
+
+            $table->string('habilidades')->nullable();
 
             $table->timestamps();
         });

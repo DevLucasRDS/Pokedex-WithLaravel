@@ -83,4 +83,12 @@ class PokemonControler extends Controller
 
         return view('pokedex.listar', compact('pokemons', 'sort', 'order', 'search'));
     }
+    public function especificacao($id)
+    {
+        $pokemon = Pokemon::find($id);
+        if (!$pokemon) {
+            return redirect()->route('pokedex.index')->with('error', 'pokemon não encontrado');
+        }
+        return view('pokedex.especificacao', compact('pokemon'));
+    }
 }

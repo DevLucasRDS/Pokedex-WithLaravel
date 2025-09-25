@@ -27,6 +27,16 @@
                     />
                 </div>
                 <div class="mb-3">
+                    <label class="form-label" for="trainer_name">Nome do Treinador</label>
+                    <input
+                        type="text"
+                        name="trainer_name"
+                        id="trainer_name"
+                        class="form-control"
+                        placeholder="Digite o nome do treinador"
+                 />
+                </div>
+                <div class="mb-3">
                     <label class="form-label" for="email">Email</label>
                     <input
                         type="email"

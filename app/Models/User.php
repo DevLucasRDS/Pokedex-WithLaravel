@@ -6,29 +6,39 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use App\Models\Trainer;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, HasUuids;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
-    protected static function booted()
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
+    public static function boot()
     {
-        static::creating(function ($user) {
-            do {
-                $id = random_int(100000, 999999); // exemplo: 6 dígitos
-            } while (User::where('id', $id)->exists());
-            $user->id = $id;
+        parent::boot();
+
+        static::creating(function (Model $model) {
+            if (empty($model->id)) {
+                $model->id = Str::uuid();
+            }
         });
     }
 
     protected $fillable = [
         'name',
+        'sobrenome',
         'email',
         'password',
         'sobrenome',
@@ -49,6 +59,11 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
+    public function trainer()
+    {
+        return $this->hasOne(Trainer::class);
+    }
+
     protected function casts(): array
     {
         return [
