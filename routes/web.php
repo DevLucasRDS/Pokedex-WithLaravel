@@ -27,3 +27,28 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/listar-pokemon', [PokemonControler::class, 'listar'])->name('listar');
+
+Route::get('/especificacao', [PokemonControler::class, 'especificacao'])->name('especificacao');
+
+use App\Http\Controllers\TeamController;
+
+// Listar times do treinador autenticado
+Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
+
+// Formulário de criação de time
+Route::get('/teams/create', [TeamController::class, 'create'])->name('teams.create');
+
+// Salvar time novo
+Route::post('/teams', [TeamController::class, 'store'])->name('teams.store');
+
+// Visualizar um time específico
+Route::get('/teams/{team}', [TeamController::class, 'show'])->name('teams.show');
+
+// Formulário de edição do time
+Route::get('/teams/{team}/edit', [TeamController::class, 'edit'])->name('teams.edit');
+
+// Atualizar o time
+Route::put('/teams/{team}', [TeamController::class, 'update'])->name('teams.update');
+
+// Deletar um time
+Route::delete('/teams/{team}', [TeamController::class, 'destroy'])->name('teams.destroy');

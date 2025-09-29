@@ -14,18 +14,23 @@ class AuthController extends Controller
     }
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
+        // Requisitos para login
+        $request->validate([
+            'login' => 'required|string',
+            'password' => 'required|string',
         ]);
-        if (Auth::attempt($credentials)) {
+
+        $loginType = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
+
+        if (Auth::attempt([$loginType => $request->login, 'password' => $request->password])) {
             $request->session()->regenerate();
-            return redirect()->route('dashboard');
+            return redirect()->intended('/dashboard');
         }
+
 
         return back()->withInput()->with('success', 'Login inválido!');
     }
-    public function darhboard()
+    public function dashboard()
     {
         return view(('pokedex.index'));
     }

@@ -12,7 +12,7 @@
                 placeholder="Digite o nome do Pokémon"
                 value="{{ request('name') }}"
             >
-            <div class="pd-2 d-flex">
+            <div class="pd-2 d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Buscar</button>
                 <a href="{{route('pokedex.index')}}" class="btn btn-warning btn-sm"> Limpar</a>
             </div>
@@ -37,12 +37,6 @@
                                 <p class="card-text">
                                     <strong>Tipo:</strong> {{ $pokemon['tipo'] }}
                                 </p>
-
-                                {{-- Funções extras só aparecem para usuários logados --}}
-                                @auth
-                                    <a href="#" class="btn btn-success btn-sm">Favoritar</a>
-                                    <a href="#" class="btn btn-info btn-sm">Detalhes</a>
-                                @endauth
                             </div>
                         </div>
                     </div>

@@ -6,30 +6,33 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('pokemon', function (Blueprint $table) {
             $table->id();
             $table->string('nome');
-            $table->string('tipo')->nullable();
+            $table->string('tipo');
             $table->integer('altura')->nullable();
             $table->integer('peso')->nullable();
-            $table->json('status')->nullable(); // hp, attack, defense, etc.
-            $table->json('habilidades')->nullable(); // habilidades
             $table->string('imagem')->nullable();
+
+            // Status em colunas separadas
+            $table->integer('hp')->nullable();
+            $table->integer('attack')->nullable();
+            $table->integer('defense')->nullable();
+            $table->integer('special_attack')->nullable();
+            $table->integer('special_defense')->nullable();
+            $table->integer('speed')->nullable();
+
+
+            $table->string('habilidades')->nullable();
+
             $table->timestamps();
         });
     }
 
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('pokemons');
+        Schema::dropIfExists('pokemon');
     }
 };

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -15,21 +16,30 @@ class UserController extends Controller
         return view('create-account');
     }
 
-    public function store(Request $request, User $user)
+    public function store(Request $request)
     {
-        $data = $request->validate([
+        $validated = $request->validate([
             'nome' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
+            'sobrenome' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'trainer_name' => 'required|string|max:255',
         ]);
 
-        $User = User::create([
-            'name' => $data['nome'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+        $user = User::create([
+            'name' => $validated['nome'],
+            'sobrenome' => $validated['sobrenome'],
+            'email' => $validated['email'],
+            'password'  => Hash::make($validated['password']),
         ]);
 
-        Auth::login($User);
-        return redirect()->route('pokedex.index')->with('success', 'Conta criada com sucesso!');
+        // Cria o treinador vinculado ao usuário
+        $user->trainer()->create([
+            'trainer_name' => $validated['trainer_name'],
+        ]);
+
+        Auth::login($user);
+
+        return redirect()->route('dashboard')->with('success', 'Conta criada com sucesso!');
     }
 }

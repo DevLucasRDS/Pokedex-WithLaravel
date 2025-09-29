@@ -28,4 +28,10 @@ class Pokemon extends Model
         'status' => 'array',
         'habilidades' => 'array',
     ];
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class, 'pokemon_team')
+            ->withPivot('slot')
+            ->withTimestamps();
+    }
 }
