@@ -27,7 +27,8 @@
                 @foreach ($pokemons as $pokemon)
                     <div class="col">
                         <div class="card shadow p-3">
-                            <img
+                            <a href="{{route('especificacao', ['pokemon' => $pokemon->id])}}" class="text-decoration-none text-body-secondary">
+                                 <img
                                 src="{{ $pokemon['imagem'] }}"
                                 class="card-img-top w-50 mx-auto d-block"
                                 alt="{{ $pokemon['nome'] }}"
@@ -38,6 +39,8 @@
                                     <strong>Tipo:</strong> {{ $pokemon['tipo'] }}
                                 </p>
                             </div>
+                            </a>
+
                         </div>
                     </div>
                 @endforeach

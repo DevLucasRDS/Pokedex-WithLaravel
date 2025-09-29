@@ -10,17 +10,45 @@ use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class TeamController extends Controller
 {
+
     public function index()
     {
         $trainer = Auth::user()->trainer;
         $teams = $trainer->teams()->with('pokemons')->get();
 
-        return view('teams.index', compact('teams'));
+        return view('teams.teams', compact('teams', 'trainer'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('teams.create');
+        $sort = $request->query('sort', 'id'); // coluna padrão
+        $order = $request->query('order', 'asc'); // direção padrão
+        $search = $request->query('name', ''); // pesquisa por nome
+        $type = $request->query('type'); // Filtra por tipo
+
+        $validColumns = ['id', 'nome', 'tipo', 'hp', 'attack', 'defense', 'special_attack', 'special_defense', 'speed'];
+
+        $query = Pokemon::query();
+
+        // Filtro de pesquisa
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nome', 'like', "%{$search}%")
+                    ->orWhere('id', $search); // aqui id é exato
+            });
+        }
+
+        if ($type) {
+            $query->where('tipo', 'like', "%{$type}%");
+        }
+
+        // Ordenação
+        if (in_array($sort, $validColumns)) {
+            $query->orderBy($sort, $order);
+        }
+
+        $pokemons = $query->get();
+        return view('teams.teams-create', compact('pokemons', 'sort', 'order', 'search'));
     }
 
     public function store(Request $request)

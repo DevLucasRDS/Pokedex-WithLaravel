@@ -20,6 +20,9 @@
                             <a href="{{ route('listar') }}" class="d-flex align-items-center text-white text-decoration-none me-3">
                                 Listar
                             </a>
+                            <a href="{{ route('teams.index') }}" class="d-flex align-items-center text-white text-decoration-none me-3">
+                                Teams
+                            </a>
                         </div>
                         <div class="d-flex align-items-center">
 
@@ -40,6 +43,9 @@
                         <div class="d-flex align-items-center">
                             <a href="{{ route('pokedex.index') }}" class="d-flex align-items-center text-white text-decoration-none me-3">
                                 Home
+                            </a>
+                            <a href="{{ route('listar') }}" class="d-flex align-items-center text-white text-decoration-none me-3">
+                                Listar
                             </a>
                         </div>
                         <div class="d-flex align-items-center">

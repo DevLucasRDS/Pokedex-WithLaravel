@@ -36,7 +36,7 @@ use App\Http\Controllers\TeamController;
 Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
 
 // Formulário de criação de time
-Route::get('/teams/create', [TeamController::class, 'create'])->name('teams.create');
+Route::get('/teams-create', [TeamController::class, 'create'])->name('teams.create');
 
 // Salvar time novo
 Route::post('/teams', [TeamController::class, 'store'])->name('teams.store');

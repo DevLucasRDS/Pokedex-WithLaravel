@@ -52,16 +52,16 @@
                 <tr>
                     <td class="d-flex align-items-center justify-content-center">
                         <img src="{{ $pokemon['imagem'] }}" class="me-2">
-                        <span>{{ $pokemon['id'] }}</span>
+                        <span>{{ $pokemon->id }}</span>
                     </td>
-                    <td class="text-decoration-none">{{ $pokemon['nome'] }}</td>
-                    <td>{{ $pokemon['tipo'] }}</td>
-                    <td>{{ $pokemon['status']['hp'] }}</td>
-                    <td>{{ $pokemon['status']['attack'] }}</td>
-                    <td>{{ $pokemon['status']['defense'] }}</td>
-                    <td>{{ $pokemon['status']['special-attack'] }}</td>
-                    <td>{{ $pokemon['status']['special-defense'] }}</td>
-                    <td>{{ $pokemon['status']['speed'] }}</td>
+                    <td class="text-decoration-none">{{ $pokemon->nome }}</td>
+                    <td>{{ $pokemon->tipo }}</td>
+                    <td>{{ $pokemon->hp }}</td>
+                    <td>{{ $pokemon->attack }}</td>
+                    <td>{{ $pokemon->defense }}</td>
+                    <td>{{ $pokemon->special_attack }}</td>
+                    <td>{{ $pokemon->special_defense }}</td>
+                    <td>{{ $pokemon->speed }}</td>
                 </tr>
                 @endforeach
             </tbody>

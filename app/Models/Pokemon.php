@@ -18,16 +18,19 @@ class Pokemon extends Model
         'tipo',
         'altura',
         'peso',
-        'status',
+        'hp',
+        'attack',
+        'defense',
+        'special_attack',
+        'special_defense',
+        'speed',
         'habilidades',
         'imagem',
+
     ];
 
     // Cast para JSON para poder acessar como array no PHP
-    protected $casts = [
-        'status' => 'array',
-        'habilidades' => 'array',
-    ];
+    protected $casts = [];
     public function teams()
     {
         return $this->belongsToMany(Team::class, 'pokemon_team')

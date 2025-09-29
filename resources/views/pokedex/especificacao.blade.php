@@ -42,7 +42,7 @@
                         <!-- Coluna direita -->
                         <div class="col-md-6 text-end d-flex row justify-content-center text-center">
                             <div>
-                                <h3>Peso</h3>
+                                <h3>Tipo</h3>
                                 <h6>{{$pokemon->tipo}}</h6>
                             </div>
                             <div>
