@@ -60,5 +60,7 @@
         <div class="container mt-4">
             @yield('content')
         </div>
+
+        <script src="{{ asset('js/team.js') }}"></script>
     </body>
 </html>

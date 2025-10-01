@@ -32,7 +32,7 @@ class Team extends Model
     }
     public function pokemons()
     {
-        return $this->belongsToMany(Pokemon::class, 'pokemon_team')
+        return $this->belongsToMany(Pokemon::class, 'pokemon_team', 'team_id', 'pokemon_id')
             ->withPivot('slot')
             ->withTimestamps();
     }

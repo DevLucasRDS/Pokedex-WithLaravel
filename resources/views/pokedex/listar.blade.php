@@ -6,9 +6,32 @@
 
         <!-- Formulário de pesquisa -->
         <form method="GET" action="{{ route('listar') }}" class="mb-3 d-flex">
-            <input type="text" name="name" class="form-control me-2" placeholder="Pesquisar Pokémon" value="{{ $search ?? '' }}">
-            <button type="submit" class="btn btn-primary">Buscar</button>
-        </form>
+    <input type="text" name="name" class="form-control me-2" placeholder="Pesquisar Pokémon" value="{{ $search ?? '' }}">
+
+    <!-- Select Tipo 1 -->
+    <select name="type1" class="form-select me-2">
+        <option value="">-- Tipo 1 --</option>
+        @foreach($tipos as $tipo)
+            <option value="{{ $tipo }}" {{ ($type1 ?? '') === $tipo ? 'selected' : '' }}>
+                {{ $tipo }}
+            </option>
+        @endforeach
+    </select>
+
+    <!-- Select Tipo 2 -->
+    <select name="type2" class="form-select me-2">
+        <option value="">-- Tipo 2 --</option>
+        @foreach($tipos as $tipo)
+            <option value="{{ $tipo }}" {{ ($type2 ?? '') === $tipo ? 'selected' : '' }}>
+                {{ $tipo }}
+            </option>
+        @endforeach
+    </select>
+
+    <button type="submit" class="btn btn-primary">Buscar</button>
+    <a href="{{ route('listar') }}" class="btn btn-warning ms-2">Limpar</a>
+</form>
+
 
         <table class="table table-striped table-hover text-center align-middle">
             <thead class="table-dark">

@@ -59,6 +59,49 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-6">
+            <div class="card shadow p-3">
+                <div class="card-body">
+                    <div class="row">
+                        <h1 class="text-center">Status</h1>
+                        <div>
+                            <canvas id="myChart"></canvas>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx = document.getElementById('myChart');
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Hp', 'Attack', 'Defesa', 'Special attack', 'Special defense', 'Speed'],
+      datasets: [{
+        label: 'Status',
+        data: [{{$pokemon->hp}}, {{$pokemon->attack}}, {{$pokemon->defense}}, {{$pokemon->special_attack}}, {{$pokemon->special_defense}}, {{$pokemon->speed}}],
+        borderWidth: 1,
+        backgroundColor: [
+      'rgb(54, 162, 235)',
+      'rgb(255, 99, 132)',
+
+    ],
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>
 @endsection

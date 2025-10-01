@@ -5,6 +5,7 @@ use App\Http\Controllers\PokemonControler;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Models\User;
+use App\Http\Controllers\TeamController;
 
 Route::get('/', function () {
     return view('create-account');
@@ -30,7 +31,9 @@ Route::get('/listar-pokemon', [PokemonControler::class, 'listar'])->name('listar
 
 Route::get('/especificacao', [PokemonControler::class, 'especificacao'])->name('especificacao');
 
-use App\Http\Controllers\TeamController;
+Route::get('/favoritos', [PokemonControler::class, 'favoritos'])->name('favoritos.index');
+
+
 
 // Listar times do treinador autenticado
 Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');

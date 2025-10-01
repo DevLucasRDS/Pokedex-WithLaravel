@@ -23,49 +23,85 @@ class TeamController extends Controller
     {
         $sort = $request->query('sort', 'id'); // coluna padrão
         $order = $request->query('order', 'asc'); // direção padrão
-        $search = $request->query('name', ''); // pesquisa por nome
-        $type = $request->query('type'); // Filtra por tipo
+        $search = $request->query('name'); // pesquisa por nome
+        $type1 = $request->query('type1');
+        $type2 = $request->query('type2');
 
         $validColumns = ['id', 'nome', 'tipo', 'hp', 'attack', 'defense', 'special_attack', 'special_defense', 'speed'];
 
-        $query = Pokemon::query();
+        $pokemons = Pokemon::query()
+            ->when($search, function ($query, $search) {
+                $query->where('nome', 'like', "%{$search}%")
+                    ->orWhere('id', $search);
+            })
+            ->when($type1, function ($query, $type) {
+                $types = is_array($type) ? $type : explode(',', $type);
 
-        // Filtro de pesquisa
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('nome', 'like', "%{$search}%")
-                    ->orWhere('id', $search); // aqui id é exato
-            });
-        }
+                $query->where(function ($q) use ($types) {
+                    foreach ($types as $t) {
+                        $q->orWhere('tipo', 'like', "%{$t}%");
+                    }
+                });
+            })
+            ->when($type2, function ($query, $type) {
+                $types = is_array($type) ? $type : explode(',', $type);
 
-        if ($type) {
-            $query->where('tipo', 'like', "%{$type}%");
-        }
+                $query->where(function ($q) use ($types) {
+                    foreach ($types as $t) {
+                        $q->orWhere('tipo', 'like', "%{$t}%");
+                    }
+                });
+            })
+            ->when(in_array($sort, $validColumns), function ($query) use ($sort, $order) {
+                $query->orderBy($sort, $order);
+            })
+            ->get();
+        $tipos = [
+            'Fire',
+            'Water',
+            'Grass',
+            'Electric',
+            'Ice',
+            'Fighting',
+            'Poison',
+            'Ground',
+            'Flying',
+            'Psychic',
+            'Bug',
+            'Rock',
+            'Ghost',
+            'Dragon',
+            'Dark',
+            'Steel',
+            'Fairy'
+        ];
 
-        // Ordenação
-        if (in_array($sort, $validColumns)) {
-            $query->orderBy($sort, $order);
-        }
-
-        $pokemons = $query->get();
-        return view('teams.teams-create', compact('pokemons', 'sort', 'order', 'search'));
+        return view('teams.teams-create', compact('pokemons', 'sort', 'order', 'search', 'tipos', 'type1', 'type2'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255'
+            'team_name' => 'required|string|max:255',
+            'team_pokemons' => 'array|max:6'
         ]);
 
         $trainer = Auth::user()->trainer;
 
         $team = $trainer->teams()->create([
-            'name' => $request->name
+            'team_name' => $request->team_name
         ]);
 
+        // Salvar os pokémons selecionados, se houver
+        if ($request->filled('team_pokemons')) {
+            $team->pokemons()->sync(array_filter($request->team_pokemons));
+        }
+
         return redirect()->route('teams.show', $team)
-            ->with('success', 'Time criado com sucesso!');
+            ->with('success', 'Time criado com sucesso!');;
     }
+
+
 
     public function show(Team $team)
     {

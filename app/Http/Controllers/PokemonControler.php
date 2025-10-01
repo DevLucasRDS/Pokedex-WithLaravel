@@ -53,25 +53,32 @@ class PokemonControler extends Controller
     // Listagem com ordenação
     public function listar(Request $request)
     {
-        $sort = $request->query('sort', 'id'); // coluna padrão
-        $order = $request->query('order', 'asc'); // direção padrão
-        $search = $request->query('name', ''); // pesquisa por nome
-        $type = $request->query('type'); // Filtra por tipo
+        $sort = $request->query('sort', 'id');
+        $order = $request->query('order', 'asc');
+        $search = $request->query('name', '');
+        $type1 = $request->query('type1');
+        $type2 = $request->query('type2');
 
         $validColumns = ['id', 'nome', 'tipo', 'hp', 'attack', 'defense', 'special_attack', 'special_defense', 'speed'];
 
         $query = Pokemon::query();
 
-        // Filtro de pesquisa
+        // Filtro por nome
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('nome', 'like', "%{$search}%")
-                    ->orWhere('id', $search); // aqui id é exato
+                    ->orWhere('id', $search);
             });
         }
 
-        if ($type) {
-            $query->where('tipo', 'like', "%{$type}%");
+        // Filtro por tipo 1
+        if ($type1) {
+            $query->where('tipo', 'like', "%{$type1}%");
+        }
+
+        // Filtro por tipo 2
+        if ($type2) {
+            $query->where('tipo', 'like', "%{$type2}%");
         }
 
         // Ordenação
@@ -81,8 +88,32 @@ class PokemonControler extends Controller
 
         $pokemons = $query->get();
 
-        return view('pokedex.listar', compact('pokemons', 'sort', 'order', 'search'));
+        // lista única de tipos para popular o select
+        $tipos = [
+            'Fire',
+            'Water',
+            'Grass',
+            'Electric',
+            'Ice',
+            'Fighting',
+            'Poison',
+            'Ground',
+            'Flying',
+            'Psychic',
+            'Bug',
+            'Rock',
+            'Ghost',
+            'Dragon',
+            'Dark',
+            'Steel',
+            'Fairy'
+        ];
+
+        return view('pokedex.listar', compact('pokemons', 'sort', 'order', 'search', 'tipos', 'type1', 'type2'));
     }
+
+
+
     public function especificacao(Request $request)
     {
         $id = $request->query('pokemon'); // pega ?pokemon=1
