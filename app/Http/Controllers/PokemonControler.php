@@ -53,42 +53,41 @@ class PokemonControler extends Controller
     // Listagem com ordenação
     public function listar(Request $request)
     {
-        $sort = $request->query('sort', 'id');
-        $order = $request->query('order', 'asc');
-        $search = $request->query('name', '');
+        $sort = $request->query('sort', 'id'); // coluna padrão
+        $order = $request->query('order', 'asc'); // direção padrão
+        $search = $request->query('name'); // pesquisa por nome
         $type1 = $request->query('type1');
         $type2 = $request->query('type2');
 
         $validColumns = ['id', 'nome', 'tipo', 'hp', 'attack', 'defense', 'special_attack', 'special_defense', 'speed'];
 
-        $query = Pokemon::query();
-
-        // Filtro por nome
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('nome', 'like', "%{$search}%")
+        $pokemons = Pokemon::query()
+            ->when($search, function ($query, $search) {
+                $query->where('nome', 'like', "%{$search}%")
                     ->orWhere('id', $search);
-            });
-        }
+            })
+            ->when($type1, function ($query, $type) {
+                $types = is_array($type) ? $type : explode(',', $type);
 
-        // Filtro por tipo 1
-        if ($type1) {
-            $query->where('tipo', 'like', "%{$type1}%");
-        }
+                $query->where(function ($q) use ($types) {
+                    foreach ($types as $t) {
+                        $q->orWhere('tipo', 'like', "%{$t}%");
+                    }
+                });
+            })
+            ->when($type2, function ($query, $type) {
+                $types = is_array($type) ? $type : explode(',', $type);
 
-        // Filtro por tipo 2
-        if ($type2) {
-            $query->where('tipo', 'like', "%{$type2}%");
-        }
-
-        // Ordenação
-        if (in_array($sort, $validColumns)) {
-            $query->orderBy($sort, $order);
-        }
-
-        $pokemons = $query->get();
-
-        // lista única de tipos para popular o select
+                $query->where(function ($q) use ($types) {
+                    foreach ($types as $t) {
+                        $q->orWhere('tipo', 'like', "%{$t}%");
+                    }
+                });
+            })
+            ->when(in_array($sort, $validColumns), function ($query) use ($sort, $order) {
+                $query->orderBy($sort, $order);
+            })
+            ->get();
         $tipos = [
             'Fire',
             'Water',

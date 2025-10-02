@@ -19,13 +19,13 @@ return new class extends Migration
 
 
         Schema::create('pokemon_team', function (Blueprint $table) {
+            $table->id();
             $table->uuid('team_id');
-            $table->unsignedBigInteger('pokemon_id'); // supondo que os pokémons sejam numéricos
-            $table->tinyInteger('slot'); // 1 até 6
-            $table->timestamps();
-
-            $table->primary(['team_id', 'slot']);
             $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade');
+            $table->unsignedBigInteger('pokemon_id');
+            $table->foreign('pokemon_id')->references('id')->on('pokemon')->onDelete('cascade');
+            $table->tinyInteger('slot')->nullable(); // opcional, se quiser guardar a posição do Pokémon no time
+            $table->timestamps();
         });
     }
 

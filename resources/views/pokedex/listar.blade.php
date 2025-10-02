@@ -30,65 +30,42 @@
 
     <button type="submit" class="btn btn-primary">Buscar</button>
     <a href="{{ route('listar') }}" class="btn btn-warning ms-2">Limpar</a>
-</form>
+ </form>
 
-
-        <table class="table table-striped table-hover text-center align-middle">
-            <thead class="table-dark">
-                <tr>
-                    @php
-                        $columns = [
-                            'id' => 'ID',
-                            'nome' => 'Nome',
-                            'tipo' => 'Tipo',
-                            'hp' => 'HP',
-                            'attack' => 'Attack',
-                            'defense' => 'Defense',
-                            'special-attack' => 'Sp.Atk',
-                            'special-defense' => 'Sp.Def',
-                            'speed' => 'Speed'
-                        ];
-                    @endphp
-
-                    @foreach ($columns as $key => $label)
-                        <th>
-                            @if($key !== 'tipo') {{-- tipo não é numérico nem status --}}
-                            <a href="{{ route('listar', [
-                                'sort' => $key,
-                                'order' => ($sort === $key && $order === 'asc') ? 'desc' : 'asc',
-                                'name' => $search ?? null
-                            ]) }}" class="text-light text-decoration-none">
-                                {{ $label }}
-                                @if($sort === $key)
-                                    {{ $order === 'asc' ? '▲' : '▼' }}
-                                @endif
-                            </a>
-                            @else
-                                {{ $label }}
-                            @endif
-                        </th>
-                    @endforeach
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($pokemons as $pokemon)
-                <tr>
-                    <td class="d-flex align-items-center justify-content-center">
-                        <img src="{{ $pokemon['imagem'] }}" class="me-2">
-                        <span>{{ $pokemon->id }}</span>
-                    </td>
-                    <td class="text-decoration-none">{{ $pokemon->nome }}</td>
+ @if($pokemons->isEmpty())
+    <div class="alert alert-warning text-center">
+        Nenhum Pokémon encontrado para os filtros informados.
+    </div>
+@else
+    <table class="table table-striped table-hover text-center align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Tipo</th>
+                <th>HP</th>
+                <th>Atk</th>
+                <th>Def</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($pokemons as $pokemon)
+                <tr class="pokemon-row"
+                    data-id="{{ $pokemon->id }}"
+                    data-nome="{{ $pokemon->nome }}"
+                    data-img="{{ $pokemon->imagem }}">
+                    <td><img src="{{ $pokemon->imagem }}"> {{ $pokemon->id }}</td>
+                    <td>{{ $pokemon->nome }}</td>
                     <td>{{ $pokemon->tipo }}</td>
                     <td>{{ $pokemon->hp }}</td>
                     <td>{{ $pokemon->attack }}</td>
                     <td>{{ $pokemon->defense }}</td>
-                    <td>{{ $pokemon->special_attack }}</td>
-                    <td>{{ $pokemon->special_defense }}</td>
-                    <td>{{ $pokemon->speed }}</td>
                 </tr>
-                @endforeach
-            </tbody>
-        </table>
+            @endforeach
+        </tbody>
+    </table>
+@endif
+
     </div>
 </div>
 @endsection

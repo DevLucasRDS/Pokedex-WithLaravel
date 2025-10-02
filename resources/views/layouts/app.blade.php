@@ -60,7 +60,10 @@
         <div class="container mt-4">
             @yield('content')
         </div>
-
+        @vite(['resources/js/team.js'])
         <script src="{{ asset('js/team.js') }}"></script>
+        <script src="{{ asset('js/especificacao.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+         <x-alert />
     </body>
 </html>

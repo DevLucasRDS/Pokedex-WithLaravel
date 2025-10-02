@@ -9,6 +9,7 @@
             <div class="card shadow p-3">
                 <figure class="figure">
                     <img
+                        id="pokemon-img"
                         src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{{ $pokemon->id }}.png"
                         alt="{{ $pokemon->nome }}"
                         class="img-fluid"
@@ -71,6 +72,15 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow p-3">
+                <div class="card-body">
+                    <div class="row">
+                        <button id="shiny-toggle" data-id="{{ $pokemon->id }}" class="btn btn-warning mt-2">Shiny</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

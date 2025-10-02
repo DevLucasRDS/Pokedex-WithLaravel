@@ -11,52 +11,90 @@ use Illuminate\Support\Facades\Auth as FacadesAuth;
 class TeamController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         $trainer = Auth::user()->trainer;
         $teams = $trainer->teams()->with('pokemons')->get();
+        $search = $request->query('name', '');
+        $query = Team::query();
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('team_name', 'like', "%{$search}%");
+            });
+        }
+        $teams = $query->get();
 
-        return view('teams.teams', compact('teams', 'trainer'));
+        return view('teams.teams', compact('teams', 'trainer', 'search'));
     }
-
-    public function create(Request $request)
+    // Reutilizável: busca pokémons a partir dos query params (search, type1, type2, sort, order)
+    private function fetchPokemonsFromRequest(Request $request)
     {
-        $sort = $request->query('sort', 'id'); // coluna padrão
-        $order = $request->query('order', 'asc'); // direção padrão
-        $search = $request->query('name'); // pesquisa por nome
+        $sort  = $request->query('sort', 'id');
+        $order = $request->query('order', 'asc');
+        $search = $request->query('name', '');
         $type1 = $request->query('type1');
         $type2 = $request->query('type2');
 
         $validColumns = ['id', 'nome', 'tipo', 'hp', 'attack', 'defense', 'special_attack', 'special_defense', 'speed'];
 
-        $pokemons = Pokemon::query()
-            ->when($search, function ($query, $search) {
-                $query->where('nome', 'like', "%{$search}%")
+        $query = Pokemon::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nome', 'like', "%{$search}%")
                     ->orWhere('id', $search);
-            })
-            ->when($type1, function ($query, $type) {
-                $types = is_array($type) ? $type : explode(',', $type);
+            });
+        }
 
-                $query->where(function ($q) use ($types) {
-                    foreach ($types as $t) {
-                        $q->orWhere('tipo', 'like', "%{$t}%");
-                    }
-                });
-            })
-            ->when($type2, function ($query, $type) {
-                $types = is_array($type) ? $type : explode(',', $type);
+        if ($type1) {
+            $query->where('tipo', 'like', "%{$type1}%");
+        }
+        if ($type2) {
+            $query->where('tipo', 'like', "%{$type2}%");
+        }
 
-                $query->where(function ($q) use ($types) {
-                    foreach ($types as $t) {
-                        $q->orWhere('tipo', 'like', "%{$t}%");
-                    }
-                });
-            })
-            ->when(in_array($sort, $validColumns), function ($query) use ($sort, $order) {
-                $query->orderBy($sort, $order);
-            })
-            ->get();
+        if (in_array($sort, $validColumns)) {
+            $query->orderBy($sort, $order);
+        }
+
+        return $query->get();
+    }
+
+    public function create(Request $request)
+    {
+        $sort   = $request->query('sort', 'id');
+        $order  = $request->query('order', 'asc');
+        $search = $request->query('name', '');
+        $type1  = $request->query('type1');
+        $type2  = $request->query('type2');
+
+        $validColumns = ['id', 'nome', 'tipo', 'hp', 'attack', 'defense', 'special_attack', 'special_defense', 'speed'];
+
+        $query = Pokemon::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nome', 'like', "%{$search}%")
+                    ->orWhere('id', $search);
+            });
+        }
+
+        if ($type1) {
+            $query->where('tipo', 'like', "%{$type1}%");
+        }
+        if ($type2) {
+            $query->where('tipo', 'like', "%{$type2}%");
+        }
+
+        if (in_array($sort, $validColumns)) {
+            $query->orderBy($sort, $order);
+        }
+
+        $pokemons = $query->get();
+
+        // lista simples de tipos (ou busque da DB se preferir)
         $tipos = [
+            'Normal',
             'Fire',
             'Water',
             'Grass',
@@ -76,8 +114,14 @@ class TeamController extends Controller
             'Fairy'
         ];
 
-        return view('teams.teams-create', compact('pokemons', 'sort', 'order', 'search', 'tipos', 'type1', 'type2'));
+        // Se é AJAX, devolve só a tabela (partial)
+        if ($request->ajax()) {
+            return view('teams.partials.pokemon-table', compact('pokemons'))->render();
+        }
+
+        return view('teams.teams-create', compact('pokemons', 'tipos', 'search', 'type1', 'type2', 'sort', 'order'));
     }
+
 
     public function store(Request $request)
     {
@@ -92,14 +136,21 @@ class TeamController extends Controller
             'team_name' => $request->team_name
         ]);
 
-        // Salvar os pokémons selecionados, se houver
+        // Preencher a pivot table com slot
         if ($request->filled('team_pokemons')) {
-            $team->pokemons()->sync(array_filter($request->team_pokemons));
+            $syncData = [];
+            foreach ($request->team_pokemons as $slot => $pokemonId) {
+                if ($pokemonId) {
+                    $syncData[$pokemonId] = ['slot' => $slot];
+                }
+            }
+            $team->pokemons()->sync($syncData);
         }
 
         return redirect()->route('teams.show', $team)
-            ->with('success', 'Time criado com sucesso!');;
+            ->with('success', 'Time criado com sucesso!');
     }
+
 
 
 
@@ -107,29 +158,71 @@ class TeamController extends Controller
     {
         $this->authorizeTeam($team);
 
-        return view('teams.show', compact('team'));
+        return view('teams.teams-show', compact('team'));
     }
 
-    public function edit(Team $team)
+    public function edit(Team $team, Request $request)
     {
-        $this->authorizeTeam($team);
+        $pokemons = $this->fetchPokemonsFromRequest($request);
 
-        return view('teams.edit', compact('team'));
+        $tipos = [
+            'Normal',
+            'Fire',
+            'Water',
+            'Grass',
+            'Electric',
+            'Ice',
+            'Fighting',
+            'Poison',
+            'Ground',
+            'Flying',
+            'Psychic',
+            'Bug',
+            'Rock',
+            'Ghost',
+            'Dragon',
+            'Dark',
+            'Steel',
+            'Fairy'
+        ];
+
+        return view('teams.teams-edit', [
+            'team' => $team,
+            'pokemons' => $pokemons,
+            'tipos' => $tipos,
+            'search' => $request->query('name', ''),
+            'type1' => $request->query('type1'),
+            'type2' => $request->query('type2'),
+            'sort' => $request->query('sort', 'id'),
+            'order' => $request->query('order', 'asc'),
+        ]);
     }
 
     public function update(Request $request, Team $team)
     {
         $this->authorizeTeam($team);
 
-        $request->validate([
-            'name' => 'required|string|max:255'
+        $validated = $request->validate([
+            'team_name' => 'required|string|max:255',
+            'team_pokemons' => 'array|max:6',
+            'team_pokemons.*' => 'exists:pokemon,id' // garante que só pokémons válidos sejam usados
         ]);
 
-        $team->update(['name' => $request->name]);
+        // Atualiza apenas o nome do time
+        $team->update([
+            'team_name' => $validated['team_name'],
+        ]);
+
+        // Atualiza os pokémons vinculados, se houver
+        if (isset($validated['team_pokemons'])) {
+            // sincroniza os IDs dos pokémons no pivot table
+            $team->pokemons()->sync($validated['team_pokemons']);
+        }
 
         return redirect()->route('teams.show', $team)
             ->with('success', 'Time atualizado com sucesso!');
     }
+
 
     public function destroy(Team $team)
     {
@@ -146,5 +239,9 @@ class TeamController extends Controller
         if ($team->trainer_id !== Auth::user()->trainer->id) {
             abort(403, 'Acesso negado!');
         }
+    }
+    public function sideBar(Team $team)
+    {
+        $this->authorizeTeam($team);
     }
 }

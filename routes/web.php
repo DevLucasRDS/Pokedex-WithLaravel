@@ -33,6 +33,8 @@ Route::get('/especificacao', [PokemonControler::class, 'especificacao'])->name('
 
 Route::get('/favoritos', [PokemonControler::class, 'favoritos'])->name('favoritos.index');
 
+Route::get('/side-bar', [TeamController::class, 'sideBar'])->name('side-bar.layouts');
+
 
 
 // Listar times do treinador autenticado
