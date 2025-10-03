@@ -21,30 +21,32 @@
             </div>
 
             <!-- Slots do time -->
-            <div class="container d-flex justify-content-center mt-4 mb-4">
-                <div class="row row-cols-1 row-cols-md-3 g-4 text-center w-100" id="team-slots">
-                    @for ($i = 0; $i < 6; $i++)
-                        <div class="col">
-                            <div class="card shadow p-3 team-slot" data-slot="{{ $i }}">
-                                @php
-                                    // Prioriza old() (se houve erro de validação)
-                                    $pokemonId = old('team_pokemons')[$i] ?? $team->pokemons[$i]->id ?? null;
-                                    $p = $pokemonId ? $pokemons->firstWhere('id', $pokemonId) : null;
-                                @endphp
 
-                                @if($p)
-                                    <img src="{{ $p->imagem }}"><br>
-                                    <strong>{{ $p->nome }}</strong>
-                                    <input type="hidden" name="team_pokemons[]" value="{{ $p->id }}">
-                                @else
-                                    <span class="placeholder">Slot {{ $i+1 }}</span>
-                                    <input type="hidden" name="team_pokemons[]" value="">
-                                @endif
-                            </div>
-                        </div>
-                    @endfor
+<div class="container d-flex justify-content-center mt-4 mb-4">
+    <div class="row row-cols-1 row-cols-md-3 g-4 text-center w-100" id="team-slots">
+        @for ($i = 0; $i < 6; $i++)
+            <div class="col">
+                <div class="card shadow p-3 team-slot" data-slot="{{ $i }}">
+                    @php
+                        $p = $team->pokemons->firstWhere('pivot.slot', $i);
+                        $pokemonId = old("team_pokemons.{$i}", $p->id ?? null);
+                        $pokemonSlot = $pokemonId ? $pokemons->firstWhere('id', $pokemonId) : null;
+                    @endphp
+
+                    @if($pokemonSlot)
+                        <img src="{{ $pokemonSlot->imagem }}" class="img-fluid"><br>
+                        <strong>{{ $pokemonSlot->nome }}</strong>
+                        <input type="hidden" name="team_pokemons[]" value="{{ $pokemonSlot->id }}">
+                    @else
+                        <span class="placeholder">Slot {{ $i+1 }}</span>
+                        <input type="hidden" name="team_pokemons[]" value="">
+                    @endif
                 </div>
             </div>
+        @endfor
+    </div>
+</div>
+
 
             <button type="submit" class="btn btn-success">Salvar Alterações</button>
         </form>

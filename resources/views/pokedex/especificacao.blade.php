@@ -1,12 +1,13 @@
-@extends('layouts.app') @section('content')
+@extends('layouts.app')
+@section('content')
 <div class="text-center">
     <h1>{{$pokemon->nome}} # {{$pokemon->id}}</h1>
 </div>
 <div class="container mt-4">
-    <div class="row">
+    <div class="row align-items-stretch">
         <!-- Coluna da Imagem -->
         <div class="col-md-6 text-center">
-            <div class="card shadow p-3">
+            <div class="card shadow p-3 h-100">
                 <figure class="figure">
                     <img
                         id="pokemon-img"
@@ -19,29 +20,25 @@
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card shadow p-3">
+        <!-- Coluna das Características -->
+        <div class="col-md-6 d-flex">
+            <div class="card shadow p-3 h-100 w-100">
                 <div class="card-body">
-                    <div class="row">
+                    <div class="row d-flex justify-content-center align-items-center h-100">
                         <!-- Coluna esquerda -->
-                        <div class="col-md-6 d-flex row justify-content-center text-center" >
-                            <div
-
-                            >
-                                <h3>altura</h3>
+                        <div class="col-md-6 d-flex row justify-content-center text-center">
+                            <div>
+                                <h3>Altura</h3>
                                 <h6>{{$pokemon->altura /10}} M</h6>
                             </div>
-                            <div
-
-                            >
+                            <div>
                                 <h3>Peso</h3>
                                 <h6>{{$pokemon->peso /10}} Kg</h6>
                             </div>
                         </div>
 
-
                         <!-- Coluna direita -->
-                        <div class="col-md-6 text-end d-flex row justify-content-center text-center">
+                        <div class="col-md-6 d-flex row justify-content-center text-center">
                             <div>
                                 <h3>Tipo</h3>
                                 <h6>{{$pokemon->tipo}}</h6>
@@ -51,42 +48,30 @@
                                 <h6>{{$pokemon->habilidades}}</h6>
                             </div>
                         </div>
-                        <div class="d-flex row justify-content-center text-center">
-                            @auth
-                                <a href="#" class="btn btn-success btn-sm">Favoritar</a>
-                            @endauth
-                        </div>
+
+
+                            <button id="shiny-toggle" data-id="{{ $pokemon->id }}" class="btn btn-warning">Shiny</button>
+
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+
+        <!-- Status -->
+        <div class="col-md-12 mt-4">
             <div class="card shadow p-3">
                 <div class="card-body">
-                    <div class="row">
-                        <h1 class="text-center">Status</h1>
-                        <div>
-                            <canvas id="myChart"></canvas>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card shadow p-3">
-                <div class="card-body">
-                    <div class="row">
-                        <button id="shiny-toggle" data-id="{{ $pokemon->id }}" class="btn btn-warning mt-2">Shiny</button>
+                    <h1 class="text-center">Status</h1>
+                    <div class="d-flex">
+                        <canvas id="myChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const ctx = document.getElementById('myChart');
 
@@ -99,10 +84,9 @@
         data: [{{$pokemon->hp}}, {{$pokemon->attack}}, {{$pokemon->defense}}, {{$pokemon->special_attack}}, {{$pokemon->special_defense}}, {{$pokemon->speed}}],
         borderWidth: 1,
         backgroundColor: [
-      'rgb(54, 162, 235)',
-      'rgb(255, 99, 132)',
-
-    ],
+          'rgb(54, 162, 235)',
+          'rgb(255, 99, 132)',
+        ],
       }]
     },
     options: {

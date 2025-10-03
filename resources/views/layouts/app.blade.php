@@ -64,6 +64,7 @@
         <script src="{{ asset('js/team.js') }}"></script>
         <script src="{{ asset('js/especificacao.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
          <x-alert />
     </body>
 </html>

@@ -30,7 +30,7 @@
                 <div class="collapse" id="team-{{ $team->id }}">
                     <div class="card-body">
                         <div class="row row-cols-1 row-cols-md-3 g-4">
-                            @forelse($team->pokemons as $pokemon)
+                            @forelse($team->pokemons->sortBy('pivot.slot') as $pokemon)
                                 <div class="col">
                                     <div class="card shadow text-center">
                                         <img src="{{ $pokemon->imagem }}" class="card-img-top mx-auto p-2" style="max-width:120px">

@@ -3,111 +3,192 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("filter-form");
     const tableContainer = document.getElementById("pokemon-table");
     const slotsContainer = document.getElementById("team-slots");
+    const teamStatus = document.getElementById("team-status"); // elemento p/ status
 
-    function togglePokemon(slot, id, nome, img) {
-        // mantém o input name="team_pokemons[]" em todas as situações
-        if (!slot) return;
-        const slotIndex = parseInt(slot.dataset.slot, 10) + 1;
-        if (slot.querySelector('input[name="team_pokemons[]"]').value === id) {
-            slot.innerHTML = `<span class="placeholder">Slot ${slotIndex}</span>
-                              <input type="hidden" name="team_pokemons[]" value="">`;
-            return;
-        }
-        slot.innerHTML = `<img src="${img}"><br>
-                          <strong>${nome}</strong>
-                          <input type="hidden" name="team_pokemons[]" value="${id}">`;
+    if (!slotsContainer) {
+        console.warn("team-slots não encontrado na página.");
     }
 
-    // Delegação: clique dentro da tabela de pokémons
-    tableContainer.addEventListener("click", (e) => {
+    const getSlotHiddenInput = (slot) => {
+        return (
+            slot.querySelector('input[type="hidden"][name^="team_pokemons"]') ||
+            slot.querySelector('input[type="hidden"]')
+        );
+    };
+
+    function resetSlotToPlaceholder(slot) {
+        const index = parseInt(slot.dataset.slot, 10) + 1;
+        slot.innerHTML = `
+            <span class="placeholder">Slot ${index}</span>
+            <input type="hidden" name="team_pokemons[]" value="">
+        `;
+    }
+
+    function fillSlot(slot, id, nome, img) {
+        slot.innerHTML = `
+            <img src="${img}" alt="${nome}"><br>
+            <strong>${nome}</strong>
+            <input type="hidden" name="team_pokemons[]" value="${id}">
+        `;
+    }
+
+    function flashSlot(slot, color) {
+        slot.style.border = `3px solid ${color}`;
+        setTimeout(() => {
+            slot.style.border = "";
+        }, 600);
+    }
+
+    function showToast(message, icon = "success") {
+        if (typeof Swal !== "undefined") {
+            Swal.fire({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 1500,
+                icon,
+                title: message,
+            });
+        } else {
+            console.log(message);
+        }
+    }
+
+    function updateStatus() {
+        const slots = Array.from(document.querySelectorAll(".team-slot"));
+        const filled = slots.filter((s) => {
+            const inp = getSlotHiddenInput(s);
+            return inp && inp.value !== "";
+        }).length;
+
+        const remaining = slots.length - filled;
+        if (teamStatus) {
+            teamStatus.textContent = `Você já escolheu ${filled}/6 pokémons. Faltam ${remaining}.`;
+        }
+    }
+
+    function togglePokemon(slot, id, nome, img) {
+        if (!slot) return;
+        const hidden = getSlotHiddenInput(slot);
+        const slots = Array.from(document.querySelectorAll(".team-slot"));
+        let filled = slots.filter((s) => {
+            const inp = getSlotHiddenInput(s);
+            return inp && inp.value !== "";
+        }).length;
+
+        filled = filled + 1;
+
+        if (hidden && hidden.value === String(id)) {
+            resetSlotToPlaceholder(slot);
+            flashSlot(slot, "red");
+            showToast("Pokémon removido do time!", "error");
+        } else {
+            fillSlot(slot, id, nome, img);
+            flashSlot(slot, "green");
+            showToast(`${nome} adicionado ao time!, ${filled}/6`, "success");
+        }
+        updateStatus();
+    }
+
+    // clique em linhas da tabela
+    document.addEventListener("click", (e) => {
         const row = e.target.closest(".pokemon-row");
         if (!row) return;
+        if (!tableContainer || !tableContainer.contains(row)) return;
 
         const id = row.dataset.id;
         const nome = row.dataset.nome;
         const img = row.dataset.img;
 
-        // encontra slot já com esse id (se houver)
+        if (!id) return;
+
         const slots = Array.from(document.querySelectorAll(".team-slot"));
-        const existente = slots.find(
-            (s) => s.querySelector('input[name="team_pokemons[]"]').value === id
-        );
+        const existente = slots.find((s) => {
+            const input = getSlotHiddenInput(s);
+            return input && input.value !== "" && input.value === String(id);
+        });
 
         if (existente) {
             togglePokemon(existente, id, nome, img); // remove
             return;
         }
 
-        // coloca no primeiro vazio
-        const vazio = slots.find(
-            (s) => s.querySelector('input[name="team_pokemons[]"]').value === ""
-        );
+        const vazio = slots.find((s) => {
+            const input = getSlotHiddenInput(s);
+            return !input || input.value === "" || input.value === null;
+        });
+
         if (vazio) togglePokemon(vazio, id, nome, img);
     });
 
-    // Delegação: clique nos slots para remover
-    slotsContainer.addEventListener("click", (e) => {
-        const slot = e.target.closest(".team-slot");
-        if (!slot) return;
-        const input = slot.querySelector('input[name="team_pokemons[]"]');
-        if (input && input.value) {
-            togglePokemon(slot, input.value, "", "");
-        }
-    });
+    // clique nos slots para remover
+    if (slotsContainer) {
+        slotsContainer.addEventListener("click", (e) => {
+            const slot = e.target.closest(".team-slot");
+            if (!slot) return;
+            const input = getSlotHiddenInput(slot);
+            if (input && input.value) {
+                togglePokemon(slot, input.value, "", "");
+            }
+        });
+    }
 
-    // AJAX: intercepta submit do form de filtros e busca a partial
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    // AJAX filtros
+    if (form && tableContainer) {
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const params = new URLSearchParams(new FormData(form));
 
-        // coletar parâmetros do filtro
-        const params = new URLSearchParams(new FormData(form));
+            document
+                .querySelectorAll(
+                    '#team-slots input[type="hidden"][name^="team_pokemons"]'
+                )
+                .forEach((inp) => {
+                    params.append("team_pokemons[]", inp.value);
+                });
 
-        // ADICIONA os pokémons selecionados nos slots como team_pokemons[] (para manter estado se o backend precisar)
-        document
-            .querySelectorAll('#team-slots input[name="team_pokemons[]"]')
-            .forEach((inp) => {
-                // adiciona mesmo que vazio (será ''), mas OK
-                params.append("team_pokemons[]", inp.value);
-            });
+            const urlBase = form.action || window.location.href;
+            const fetchUrl =
+                urlBase + (params.toString() ? "?" + params.toString() : "");
 
-        const urlBase = form.action || window.location.href;
-        const fetchUrl =
-            urlBase + (params.toString() ? "?" + params.toString() : "");
+            try {
+                const res = await fetch(fetchUrl, {
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                });
+                if (!res.ok) throw new Error("Network response was not ok");
+                const html = await res.text();
+                tableContainer.innerHTML = html;
+            } catch (err) {
+                console.error("Erro ao carregar pokémons:", err);
+                alert("Erro ao carregar pokémons (veja console).");
+            }
+        });
+    }
 
-        try {
-            const res = await fetch(fetchUrl, {
-                headers: { "X-Requested-With": "XMLHttpRequest" },
-            });
-            if (!res.ok) throw new Error("Network response was not ok");
-            const html = await res.text();
-            tableContainer.innerHTML = html;
-            // NÃO precisa rebind — delegação cuida dos cliques
-        } catch (err) {
-            console.error("Erro ao carregar pokémons:", err);
-            alert("Erro ao carregar pokémons. Veja o console.");
-        }
-    });
+    // botão limpar filtros
     const clearBtn = document.getElementById("clear-filters");
-    const clear = clearBtn.closest("form");
+    if (clearBtn) {
+        clearBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const parentForm = clearBtn.closest("form");
+            if (!parentForm) return;
+            parentForm
+                .querySelectorAll('input[type="text"][name="name"]')
+                .forEach((i) => (i.value = ""));
+            parentForm
+                .querySelectorAll('select[name="type1"], select[name="type2"]')
+                .forEach((s) => (s.selectedIndex = 0));
+        });
+    }
 
-    clearBtn.addEventListener("click", function () {
-        // limpa os campos de busca
-        clear.querySelector('input[name="name"]').value = "";
-        clear.querySelector('select[name="type1"]').selectedIndex = 0;
-        clear.querySelector('select[name="type2"]').selectedIndex = 0;
+    // delete com sweetalert
+    document.addEventListener("click", (e) => {
+        const btn = e.target.closest(".btnDelete");
+        if (!btn) return;
+        e.preventDefault();
+        const deleteId = btn.getAttribute("data-delete-id");
 
-        // se você também quiser limpar os pokémons selecionados dos filtros:
-        clear
-            .querySelectorAll('input[name="team_pokemons[]"]')
-            .forEach((input) => input.remove());
-    });
-
-    document.querySelectorAll(".btnDelete").forEach(function (button) {
-        button.addEventListener("click", function (event) {
-            event.preventDefault(); // precisa dos parênteses ✅
-
-            var deleteId = this.getAttribute("data-delete-id");
-
+        if (typeof Swal !== "undefined") {
             Swal.fire({
                 title: "Certeza?",
                 text: "Você não conseguirá reverter isso!",
@@ -118,9 +199,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 confirmButtonText: "Excluir",
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.getElementById("formExcluir" + deleteId).submit();
+                    const form = document.getElementById(
+                        "formExcluir" + deleteId
+                    );
+                    if (form) form.submit();
                 }
             });
-        });
+        } else {
+            const form = document.getElementById("formExcluir" + deleteId);
+            if (form) form.submit();
+        }
     });
+
+    // inicia status
+    updateStatus();
 });

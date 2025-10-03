@@ -186,6 +186,11 @@ class TeamController extends Controller
             'Fairy'
         ];
 
+        // Ordenar os Pokémon do time pelo slot
+        $team->load(['pokemons' => function ($query) {
+            $query->orderBy('pivot_slot', 'asc');
+        }]);
+
         return view('teams.teams-edit', [
             'team' => $team,
             'pokemons' => $pokemons,
@@ -205,18 +210,23 @@ class TeamController extends Controller
         $validated = $request->validate([
             'team_name' => 'required|string|max:255',
             'team_pokemons' => 'array|max:6',
-            'team_pokemons.*' => 'exists:pokemon,id' // garante que só pokémons válidos sejam usados
+            'team_pokemons.*' => 'nullable|exists:pokemon,id',
         ]);
 
-        // Atualiza apenas o nome do time
+        // Atualiza nome do time
         $team->update([
             'team_name' => $validated['team_name'],
         ]);
 
-        // Atualiza os pokémons vinculados, se houver
+        // Atualiza os pokémons nos slots
         if (isset($validated['team_pokemons'])) {
-            // sincroniza os IDs dos pokémons no pivot table
-            $team->pokemons()->sync($validated['team_pokemons']);
+            $syncData = [];
+            foreach ($validated['team_pokemons'] as $slot => $pokemonId) {
+                if ($pokemonId) {
+                    $syncData[$pokemonId] = ['slot' => $slot];
+                }
+            }
+            $team->pokemons()->sync($syncData);
         }
 
         return redirect()->route('teams.show', $team)

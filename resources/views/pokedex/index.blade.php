@@ -48,22 +48,9 @@
         </div>
     </div>
 
-    {{-- Paginação só aparece quando não há pesquisa --}}
-    @if (!request('name'))
-    <div class="d-flex justify-content-center mt-4 mb-3">
-        <a
-            href="{{ route('pokedex.index', ['page' => $page > 1 ? $page - 1 : 1]) }}"
-            class="btn btn-secondary me-2"
-        >
-            Anterior
-        </a>
-        <a
-            href="{{ route('pokedex.index', ['page' => $page + 1]) }}"
-            class="btn btn-primary"
-        >
-            Próximo
-        </a>
+    <div class="d-flex justify-content-center">
+        {{ $pokemons->withQueryString()->onEachSide(5)->links()}}
     </div>
-    @endif
+
 </div>
 @endsection
