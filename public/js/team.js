@@ -8,14 +8,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!slotsContainer) {
         console.warn("team-slots não encontrado na página.");
     }
-
+    // Pega o input dentro dos slots
     const getSlotHiddenInput = (slot) => {
         return (
             slot.querySelector('input[type="hidden"][name^="team_pokemons"]') ||
             slot.querySelector('input[type="hidden"]')
         );
     };
-
+    // Reseta o slot para placeholder
     function resetSlotToPlaceholder(slot) {
         const index = parseInt(slot.dataset.slot, 10) + 1;
         slot.innerHTML = `
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <input type="hidden" name="team_pokemons[]" value="">
         `;
     }
-
+    // Preenche o slot com o pokémon
     function fillSlot(slot, id, nome, img) {
         slot.innerHTML = `
             <img src="${img}" alt="${nome}"><br>
@@ -31,14 +31,14 @@ document.addEventListener("DOMContentLoaded", () => {
             <input type="hidden" name="team_pokemons[]" value="${id}">
         `;
     }
-
+    // Animação de borda
     function flashSlot(slot, color) {
         slot.style.border = `3px solid ${color}`;
         setTimeout(() => {
             slot.style.border = "";
         }, 600);
     }
-
+    // Toast com SweetAlert2
     function showToast(message, icon = "success") {
         if (typeof Swal !== "undefined") {
             Swal.fire({
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log(message);
         }
     }
-
+    // Atualiza o status do time
     function updateStatus() {
         const slots = Array.from(document.querySelectorAll(".team-slot"));
         const filled = slots.filter((s) => {
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
             teamStatus.textContent = `Você já escolheu ${filled}/6 pokémons. Faltam ${remaining}.`;
         }
     }
-
+    // Adiciona ou remove o pokémon do slot
     function togglePokemon(slot, id, nome, img) {
         if (!slot) return;
         const hidden = getSlotHiddenInput(slot);
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }).length;
 
         filled = filled + 1;
-
+        // Se ja estiver no slot, remove, se não, adiciona. Mensagem de alerta
         if (hidden && hidden.value === String(id)) {
             resetSlotToPlaceholder(slot);
             flashSlot(slot, "red");

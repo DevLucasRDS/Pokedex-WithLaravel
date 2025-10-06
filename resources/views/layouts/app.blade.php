@@ -60,6 +60,7 @@
         <div class="container mt-4">
             @yield('content')
         </div>
+        <!-- Scripts -->
         @vite(['resources/js/team.js'])
         <script src="{{ asset('js/team.js') }}"></script>
         <script src="{{ asset('js/especificacao.js') }}"></script>

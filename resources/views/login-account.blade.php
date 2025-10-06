@@ -1,4 +1,6 @@
 @extends('layouts.app') @section('content')
+
+<!-- formulario de login -->
 <div class="card mt-4 mb-4 border shadow">
     <div class="card-body">
         <form action="{{ route('auth') }}" method="POST">

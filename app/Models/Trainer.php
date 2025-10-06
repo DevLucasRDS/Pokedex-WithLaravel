@@ -11,6 +11,7 @@ class Trainer extends Model
 
     protected $fillable = ['user_id', 'trainer_name'];
 
+    //Relações
     public function user()
     {
         return $this->belongsTo(User::class);

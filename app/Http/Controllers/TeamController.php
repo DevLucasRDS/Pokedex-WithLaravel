@@ -14,18 +14,20 @@ class TeamController extends Controller
     public function index(Request $request)
     {
         $trainer = Auth::user()->trainer;
-        $teams = $trainer->teams()->with('pokemons')->get();
         $search = $request->query('name', '');
-        $query = Team::query();
+
+        // começa a query a partir do treinador logado
+        $query = $trainer->teams()->with('pokemons');
+
         if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('team_name', 'like', "%{$search}%");
-            });
+            $query->where('team_name', 'like', "%{$search}%");
         }
+
         $teams = $query->get();
 
         return view('teams.teams', compact('teams', 'trainer', 'search'));
     }
+
     // Reutilizável: busca pokémons a partir dos query params (search, type1, type2, sort, order)
     private function fetchPokemonsFromRequest(Request $request)
     {
@@ -38,7 +40,7 @@ class TeamController extends Controller
         $validColumns = ['id', 'nome', 'tipo', 'hp', 'attack', 'defense', 'special_attack', 'special_defense', 'speed'];
 
         $query = Pokemon::query();
-
+        //Filtros
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('nome', 'like', "%{$search}%")
@@ -71,7 +73,7 @@ class TeamController extends Controller
         $validColumns = ['id', 'nome', 'tipo', 'hp', 'attack', 'defense', 'special_attack', 'special_defense', 'speed'];
 
         $query = Pokemon::query();
-
+        //Filtros
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('nome', 'like', "%{$search}%")

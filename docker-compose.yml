@@ -1,0 +1,28 @@
+services:
+    app:
+        build: .
+        container_name: pokedex-app
+        restart: unless-stopped
+        ports:
+            - "8000:8000"
+        volumes:
+            - .:/var/www/html
+        depends_on:
+            - db
+
+    db:
+        image: mysql:8.0
+        container_name: pokedex-db
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: pokedex
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_USER: root
+            MYSQL_PASSWORD: root
+        ports:
+            - "3306:3306"
+        volumes:
+            - dbdata:/var/lib/mysql
+
+volumes:
+    dbdata:

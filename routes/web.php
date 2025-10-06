@@ -10,12 +10,13 @@ use App\Http\Controllers\TeamController;
 Route::get('/', function () {
     return view('create-account');
 });
+//Rotas de registrar
 Route::get('/register', [UserController::class, 'create'])->name('register');
 Route::post('/register', [UserController::class, 'store'])->name('register.store');
 
+//Rotas de login e logout
 Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('auth');
-
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
@@ -27,14 +28,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [PokemonControler::class, 'pokedexDashboard'])->name('dashboard');
 });
 
+// Rota de Listar o pokemon
 Route::get('/listar-pokemon', [PokemonControler::class, 'listar'])->name('listar');
 
+//Rota de especificação de pokemon
 Route::get('/especificacao', [PokemonControler::class, 'especificacao'])->name('especificacao');
-
-Route::get('/favoritos', [PokemonControler::class, 'favoritos'])->name('favoritos.index');
-
-Route::get('/side-bar', [TeamController::class, 'sideBar'])->name('side-bar.layouts');
-
 
 
 // Listar times do treinador autenticado

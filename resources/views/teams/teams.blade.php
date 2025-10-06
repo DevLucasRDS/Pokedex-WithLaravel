@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+<!-- Listagem de Times do Treinador -->
     <h1>{{ $trainer->trainer_name }}</h1>
 
     <form method="GET" action="{{ route('teams.index') }}" class="mb-3 d-flex">

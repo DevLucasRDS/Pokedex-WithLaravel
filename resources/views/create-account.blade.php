@@ -1,4 +1,5 @@
 @extends('layouts.app') @section('content')
+<!-- Formulário de criação de conta -->
 <div class="card mt-4 mb-4 border shadow">
     <div class="card-body">
         @if ($errors->any())

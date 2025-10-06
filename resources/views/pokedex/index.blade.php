@@ -1,6 +1,8 @@
-@extends('layouts.app') {{-- antes estava registrado ou visitante --}}
+@extends('layouts.app')
 
 @section('content')
+
+<!-- Card de Pesquisa e Listagem de Pokémons -->
 <div class="card mt-4 mb-4 border shadow">
     <div class="card-header me-2">
         <span>Pesquisar</span>
@@ -18,7 +20,7 @@
             </div>
         </form>
     </div>
-
+    <!-- Listagem de Pokémons -->
     <div class="container d-flex justify-content-center mt-4 mb-4">
         <div class="row row-cols-1 row-cols-md-3 g-4 text-center w-100">
             @if ($error)
@@ -47,7 +49,7 @@
             @endif
         </div>
     </div>
-
+    <!-- Paginação -->
     <div class="d-flex justify-content-center">
         {{ $pokemons->withQueryString()->onEachSide(5)->links()}}
     </div>

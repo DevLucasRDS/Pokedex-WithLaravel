@@ -13,17 +13,19 @@ class UserRequest extends FormRequest
 
     public function rules(): array
     {
+        // Regras de validação
         return [
             'name'           => 'required|string|max:255',
             'sobrenome'      => 'required|string|max:255',
             'email'          => 'required|string|email|max:255|unique:users,email',
             'password'       => 'required|string|min:8|confirmed',
-            'trainer_name'   => 'required|string|max:255', // novo campo
+            'trainer_name'   => 'required|string|max:255',
         ];
     }
 
     public function messages(): array
     {
+        // Mensagens de erro personalizadas
         return [
             'name.required'           => 'O nome é obrigatório.',
             'sobrenome.required'      => 'O sobrenome é obrigatório.',

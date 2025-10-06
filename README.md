@@ -1,61 +1,163 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# **Documentação Técnica - Projeto Pokedex com Laravel**
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## **1. Visão Geral**
 
-## About Laravel
+O projeto é uma aplicação web que permite aos usuários criar times de Pokémon, gerenciar suas equipes e visualizar informações detalhadas sobre diferentes Pokémon. O sistema utiliza Laravel como framework backend e JavaScript vanilla para interações frontend.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## **2. Estrutura do Projeto**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 2.1 Modelos (Models)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-   **User**
+    -   Utiliza UUID como chave primária ✅
+    -   Atributos: name, sobrenome, email, password ✅
+    -   Relacionamento: hasOne com Trainer✅
+-   **Trainer**
+    -   Atributos: user_id, trainer_name ✅
+    -   Relacionamentos:
+        -   belongsTo com User ✅
+        -   hasMany com Team ✅
+-   **Team**
+    -   Utiliza UUID como chave primária ✅
+    -   Atributos: team_name, trainer_id ✅
+    -   Relacionamentos:
+        -   belongsTo com Trainer ✅
+        -   belongsToMany com Pokemon (através de pokemon_team) ✅
 
-## Learning Laravel
+### 2.2 Controladores
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### AuthController
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+-   `loginForm()`: Exibe formulário de login ✅
+-   `login()`: Processa autenticação (email ou nome) ✅
+-   `dashboard()`: Redireciona para dashboard ✅
+-   `logout()`: Encerra sessão ✅
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### PokemonController
 
-## Laravel Sponsors
+-   `pokedex()`: Lista Pokémon (acesso público) ✅
+-   `pokedexDashboard()`: Lista Pokémon (requer autenticação) ✅
+-   `listar()`: Lista Pokémon com filtros e ordenação ✅
+-   `especificacao()`: Exibe detalhes de um Pokémon específico ✅
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### TeamController
 
-### Premium Partners
+-   index(): Lista times do treinador ✅
+-   `create()`: Formulário de criação de time ✅
+-   `store()`: Salva novo time ✅
+-   `show()`: Exibe detalhes do time ✅
+-   `edit()`: Formulário de edição ✅
+-   `update()`: Atualiza time existente ✅
+-   `destroy()`: Remove time ✅
+-   `authorizeTeam()`: Verifica permissão de acesso ✅
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 2.3 Rotas
 
-## Contributing
+### Autenticação
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
+<?php
+GET  /register -> UserController@create
+POST /register -> UserController@store
+GET  /login   -> AuthController@loginForm
+POST /login   -> AuthController@login
+POST /logout  -> AuthController@logout
+```
 
-## Code of Conduct
+### Pokémon
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```php
+<?php
+GET /pokedex      -> PokemonController@pokedex
+GET /dashboard    -> PokemonController@pokedexDashboard
+GET /listar-pokemon -> PokemonController@listar
+GET /especificacao -> PokemonController@especificacao
+```
 
-## Security Vulnerabilities
+### Times
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```php
+?php
+GET    /teams              -> TeamController@index
+GET    /teams-create       -> TeamController@create
+POST   /teams             -> TeamController@store
+GET    /teams/{team}      -> TeamController@show
+GET    /teams/{team}/edit -> TeamController@edit
+PUT    /teams/{team}      -> TeamController@update
+DELETE /teams/{team}      -> TeamController@destroy
+```
 
-## License
+### 2.4 JavaScript (Frontend)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### team.js
+
+Gerencia interações da interface de times:
+
+-   Gerenciamento de slots de Pokémon ✅
+-   Adição/remoção de Pokémon nos slots ✅
+-   Filtros AJAX para busca de Pokémon ✅
+-   Feedback visual (animações e notificações) ✅
+-   Confirmação de exclusão de time ✅
+
+Funcionalidades principais:
+
+-   togglePokemon(): Adiciona/remove Pokémon do slot ✅
+-   updateStatus(): Atualiza contador de Pokémon no time ✅
+-   flashSlot(): Feedback visual na alteração de slots ✅
+-   Integração com SweetAlert2 para confirmações ✅
+
+### especificacao.js
+
+Gerencia a visualização de Pokémon:
+
+-   Alternância entre sprites normal/shiny ✅
+-   Carregamento de imagens da PokeAPI ✅
+
+## **3. Características Técnicas**
+
+### 3.1 Segurança
+
+-   Autenticação de usuários ✅
+-   Proteção contra CSRF ✅
+-   Verificação de propriedade de times ✅
+-   Validação de dados em requisições ✅
+
+### 3.2 Frontend
+
+-   JavaScript vanilla sem frameworks ✅
+-   Interações AJAX para filtros ✅
+-   Feedback visual com SweetAlert2 ✅
+-   Manipulação dinâmica do DOM ✅
+
+### 3.3 Backend
+
+-   Laravel como framework PHP ✅
+-   Eloquent ORM para banco de dados ✅
+-   Sistema de rotas RESTful ✅
+-   Middleware de autenticação ✅
+
+### 3.4 Banco de Dados
+
+-   Migrations para estrutura de tabelas ✅
+-   Relacionamentos complexos entre entidades ✅
+-   UUID para identificadores únicos ✅
+-   Tabela pivot para relação Pokémon-Time ✅
+
+## **4. Particularidades do Sistema**
+
+1. **Gestão de Times**
+    - Limite de 6 Pokémon por time ✅
+    - Ordenação de slots mantida ✅
+    - Validação de propriedade ✅
+2. **Interface de Usuário**
+    - Feedback visual em tempo real ✅
+    - Filtros dinâmicos com AJAX ✅
+    - Confirmações de ações importantes ✅
+3. **Pokémon**
+    - Visualização normal/shiny ✅
+    - Filtros por tipo e nome ✅
+    - Ordenação por diferentes atributos ✅
+4. **Segurança**
+    - Autenticação robusta ✅
+    - Proteção de rotas ✅
+    - Validação de dados ✅

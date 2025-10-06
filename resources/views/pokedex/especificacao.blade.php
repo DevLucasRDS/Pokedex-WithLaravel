@@ -70,7 +70,7 @@
         </div>
     </div>
 </div>
-
+<!-- Gráfico de Barras -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const ctx = document.getElementById('myChart');

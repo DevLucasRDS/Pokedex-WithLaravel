@@ -12,9 +12,8 @@ class Team extends Model
 
     public $incrementing = false;
     protected $keyType = 'string';
-
     protected $fillable = ['team_name', 'trainer_id'];
-
+    // Gera UUID
     protected static function boot()
     {
         parent::boot();
@@ -25,7 +24,7 @@ class Team extends Model
             }
         });
     }
-
+    // Relações
     public function trainer()
     {
         return $this->belongsTo(Trainer::class);

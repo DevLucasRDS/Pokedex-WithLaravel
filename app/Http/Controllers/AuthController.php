@@ -19,9 +19,9 @@ class AuthController extends Controller
             'login' => 'required|string',
             'password' => 'required|string',
         ]);
-
+        //Verifica se o login é feito por email ou por nome
         $loginType = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
-
+        //Login
         if (Auth::attempt([$loginType => $request->login, 'password' => $request->password])) {
             $request->session()->regenerate();
             return redirect()->intended('/dashboard');
@@ -36,6 +36,7 @@ class AuthController extends Controller
     }
     public function logout(Request $request)
     {
+        //Sair da conta
         Auth::logout();
 
         $request->session()->invalidate();

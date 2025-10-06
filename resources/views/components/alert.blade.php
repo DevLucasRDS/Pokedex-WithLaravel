@@ -1,4 +1,5 @@
  <script>
+    //Inclui SweetAkert2
  ('DOMContentLoaded', function () {
         @if(session('success'))
             Swal.fire({
@@ -9,7 +10,6 @@
                 confirmButtonText: 'OK'
             });
         @endif
-
         @if(session('error'))
             Swal.fire({
                 icon: 'error',

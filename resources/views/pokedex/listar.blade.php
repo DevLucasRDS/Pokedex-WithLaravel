@@ -5,7 +5,7 @@
     <div class="card-body">
 
         <!-- Formulário de pesquisa -->
-        <form method="GET" action="{{ route('listar') }}" class="mb-3 d-flex">
+    <form method="GET" action="{{ route('listar') }}" class="mb-3 d-flex">
     <input type="text" name="name" class="form-control me-2" placeholder="Pesquisar Pokémon" value="{{ $search ?? '' }}">
 
     <!-- Select Tipo 1 -->

@@ -56,11 +56,12 @@ class PokemonControler extends Controller
         $sort = $request->query('sort', 'id'); // coluna padrão
         $order = $request->query('order', 'asc'); // direção padrão
         $search = $request->query('name'); // pesquisa por nome
-        $type1 = $request->query('type1');
-        $type2 = $request->query('type2');
+        $type1 = $request->query('type1'); //Filtro por tipo 1
+        $type2 = $request->query('type2'); //Filtro por tipo 2
 
+        // Colunas para ordenação
         $validColumns = ['id', 'nome', 'tipo', 'hp', 'attack', 'defense', 'special_attack', 'special_defense', 'speed'];
-
+        // Se a coluna ou ordem não forem válidas, usa os padrões
         $pokemons = Pokemon::query()
             ->when($search, function ($query, $search) {
                 $query->where('nome', 'like', "%{$search}%")
@@ -116,7 +117,7 @@ class PokemonControler extends Controller
     public function especificacao(Request $request)
     {
         $id = $request->query('pokemon'); // pega ?pokemon=1
-        $pokemon = Pokemon::find($id);
+        $pokemon = Pokemon::find($id); // Busca o pokemon pelo ID
 
         if (!$pokemon) {
             return redirect()->route('pokedex.index')->with('error', 'Pokémon não encontrado');

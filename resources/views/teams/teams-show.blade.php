@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+
+<!-- Detalhes do time e lista de Pokémons -->
 <div class="card mt-4 mb-4 border shadow">
     <div class="card-body">
         <h3>{{ $team->team_name }}</h3>
