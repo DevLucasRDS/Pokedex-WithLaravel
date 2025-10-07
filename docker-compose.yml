@@ -5,29 +5,36 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+        image: pokedex-withlaravel-app:latest
+        container_name: pokedex-app
         ports:
             - "8000:8000"
         environment:
             APP_ENV: production
             APP_KEY: base64:8Ml6QyzLkUjUjl8ESipYu5CQ+yc1ddqwfccuaU1MDlI=
             APP_DEBUG: false
-            APP_URL: https://seuapp.onrender.com
+            APP_URL: https://Pokedex-WithLaravel.onrender.com
             DB_CONNECTION: pgsql
             DB_HOST: dpg-d3ikcsjipnbc73e90vn0-a
             DB_PORT: 5432
             DB_DATABASE: pokedex_db_pbgj
             DB_USERNAME: pokedex_db_pbgj_user
             DB_PASSWORD: zaYKhBw7jzPC8ZSSTV6dSf0aOwGG6NR0
-        depends_on:
-            - db
+        volumes:
+            - .:/var/www/html
+        command: php artisan serve --host=0.0.0.0 --port=8000
 
     db:
-        image: mysql:8.0
+        image: postgres:17
+        container_name: pokedex-db
         environment:
-            MYSQL_DATABASE: pokedex
-            MYSQL_ROOT_PASSWORD: root
+            POSTGRES_DB: pokedex_db_pbgj
+            POSTGRES_USER: pokedex_db_pbgj_user
+            POSTGRES_PASSWORD: zaYKhBw7jzPC8ZSSTV6dSf0aOwGG6NR0
+        ports:
+            - "5432:5432"
         volumes:
-            - db_data:/var/lib/mysql
+            - pgdata:/var/lib/postgresql/data
 
 volumes:
-    db_data:
+    pgdata:
