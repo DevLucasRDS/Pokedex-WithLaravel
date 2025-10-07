@@ -32,8 +32,5 @@ RUN chmod -R 777 storage bootstrap/cache
 # Gera a chave do Laravel
 RUN php artisan key:generate
 
-# Expõe a porta usada pelo PHP-FPM
 EXPOSE 8000
-
-# Comando que inicia o servidor Laravel
-CMD php artisan serve --host=0.0.0.0 --port=8000
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
