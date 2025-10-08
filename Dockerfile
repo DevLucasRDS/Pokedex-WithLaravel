@@ -1,35 +1,22 @@
-FROM php:8.2-fpm
+# usa uma imagem que já contém nginx + php-fpm
+FROM richarvey/nginx-php-fpm:latest
 
-# Instalar dependências do sistema e extensões PHP
-RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    libpq-dev \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    curl
+# Variáveis de ambiente para configurar a imagem
+ENV SKIP_COMPOSER 1
+ENV WEBROOT /var/www/html/public
+ENV PHP_ERRORS_STDERR 1
+ENV RUN_SCRIPTS 1
+ENV REAL_IP_HEADER 1
+ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV APP_ENV production
+ENV APP_DEBUG false
+ENV LOG_CHANNEL stderr
 
-# Instalar extensões PHP (incluindo PostgreSQL)
-RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
+# Copia o código para o container
+COPY . /var/www/html
 
-# Instalar Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Permissões (ajuste se necessário)
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache || true
 
-WORKDIR /var/www/html
-
-# Copiar o projeto
-COPY . .
-
-# Instalar dependências Laravel
-RUN composer install --no-dev --optimize-autoloader
-
-# Permissões de pasta
-RUN chmod -R 777 storage bootstrap/cache
-
-# Gerar APP_KEY automaticamente
-RUN php artisan key:generate
-
-# Rodar migrations e populador automaticamente
-CMD php artisan migrate --force && php artisan Pokemon:populate && php artisan serve --host=0.0.0.0 --port=8000
+# Start padrão da imagem (inicia nginx + php-fpm)
+CMD ["/start.sh"]

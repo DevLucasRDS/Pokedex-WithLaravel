@@ -1,5 +1,4 @@
-vendor
-node_modules
+vendor/
+node_modules/
+.env
 .git
-storage/logs/*
-storage/framework/cache/*
